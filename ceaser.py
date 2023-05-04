@@ -40,21 +40,7 @@ def decrypt(key, message):
             result = result + letter
 
     return result
-def main():
-    x = int(input("hello; for encrypt press 1, for decrypt press 2: "))
-    if x == 1:
-        print("enter the word for encrypt: ")
-        word = input();
-        print("enter the key for encrypt: ")
-        key = int(input());
-        encrypted = encrypt(3, word)
-        print("the message after encrypt is: " + encrypted)  # should print "BYFFI QILFX?!"
-    # decrypt "BYFFI QILFX?!" with a key of 20
-    elif x == 2:
-        word = input("enter the word for decrypt: ")
-        key = int(input("enter the key for decrypt: "))
-        decrypted = decrypt(3, word)
-        print("the message after decrypt is: " + decrypted)
+
 
 
 
