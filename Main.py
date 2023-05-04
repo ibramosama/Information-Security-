@@ -161,15 +161,3 @@ class App(tk.Tk):
         self.options2 = ttk.Button(self, text="Decrypt",command=lambda :self.decrypt())
         self.options2.grid(row=4, column=1, sticky=tk.W)
 
-
-
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
