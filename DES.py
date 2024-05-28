@@ -56,7 +56,6 @@ initial_perm = [58, 50, 42, 34, 26, 18, 10, 2,
                 63, 55, 47, 39, 31, 23, 15, 7]
 
 # Permuted choice 1: (key is passed: 64bit -> 56bit)
-# That is bit position 8, 16, 24, 32, 40, 48, 56 and 64 are discarded from the key.
 perm_cho_1 = [57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18,
               10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36,
               63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22,
@@ -172,7 +171,6 @@ def bin_to_dec(msg):
     return decimal
 
 
-# Decimal to binary conversion
 def dec_to_bin(num):
     res = bin(num).replace("0b", "")
     if (len(res) % 4 != 0):
@@ -197,7 +195,6 @@ def shift_left(key, nth_shifts):
 
 
 # Step1: It is just rearranging the positions of all bits of plain text
-# according to the initial_perm matrix(8x8)
 def initial_permutation(plain_text, initial_perm, no_bits):
     permutation = ""
     for i in range(0, no_bits):
@@ -235,12 +232,6 @@ def encrypt(msg, key):
         key_from_pc2_bin.append(round_key)
         key_from_pc2_hex.append(bin_to_hexa(round_key))
 
-    # For decryption, just uncomment below two lines
-    # key_from_pc2_bin=key_from_pc2_bin[::-1]
-    # key_from_pc2_hex=key_from_pc2_hex[::-1]
-
-    # Message transformation
-    # Encryption
 
     for j in range(16):
         # Expansion Permutation
@@ -302,15 +293,13 @@ def decrypt(msg, key):
     key_from_pc2_bin = key_from_pc2_bin[::-1]
     key_from_pc2_hex = key_from_pc2_hex[::-1]
 
-    # Message transformation
-    # Encryption
 
     for j in range(16):
         # Expansion Permutation
         right_expand = initial_permutation(right, expan_perm, 48)
         xor_x = xor(right_expand, key_from_pc2_bin[j])
 
-        # calculating row and column from s box
+
         s_box_str = ""
         for i in range(0, 8):
             row = bin_to_dec(int(xor_x[i * 6] + xor_x[i * 6 + 5]))
@@ -318,24 +307,20 @@ def decrypt(msg, key):
             val = s_box[i][row][col]
             s_box_str = s_box_str + dec_to_bin(val)
 
-        # towards permutation box
+
         s_box_str = initial_permutation(s_box_str, perm_table, 32)
 
-        # Now again XOR with left part and above
         result = xor(left, s_box_str)
         left = result
 
-        # Swapping
         if (j != 15):
             left, right = right, left
 
-    # concatinating both left and right
     combine = left + right
     cipher_text = initial_permutation(combine, final_perm, 64)
     return cipher_text
 
 
-# Padding function
 def pad(msg):
     if (len(msg) % 16 != 0):
 
@@ -344,86 +329,3 @@ def pad(msg):
 
     return (msg)
 
-
-# Main function
-
-'''
-----------OUTPUT----------
-Enter the message to be encrypted: 
-536ABCD8910FF9
-Padding required
-Message after padding:  536ABCD8910FF900
-Enter the 64bit key for encryption: 
-74631BBDCA8
-Padding required
-Key after padding:  74631BBDCA800000
-Encryption
-Message after initial permutation:  4B5D24715C466E23
-The converted 56bit key is:  00111000000100110000101100000001011000001001000111001101
-Round: Left key part: Right key part: SubKey used:
-01       5C466E23        6E81D6DE     A289056D34C0
-02       6E81D6DE        8F2C919D     8A34034AB231
-03       8F2C919D        7C74DB60     69064C734D28
-04       7C74DB60        69DDF400     40D08808191A
-05       69DDF400        44AE2868     108972C57034
-06       44AE2868        B2467F7F     A46803610AE8
-07       B2467F7F        458145D1     23270490981F
-08       458145D1        488D0D53     4814910716B4
-09       488D0D53        62E16561     494060887282
-10       62E16561        0A6342EC     80C9B8746225
-11       0A6342EC        EA0DAA35     942303B208CA
-12       EA0DAA35        7669590A     231E0184B313
-13       7669590A        5706FABD     4930C4372660
-14       5706FABD        29B656BD     10C4D8788942
-15       29B656BD        31FA5C5F     54412204E41E
-16       6A1A9764        31FA5C5F     16AB20801DC9
-Cipher text is:  86760F7ABEE16B24
->>> 
-'''
-
-'''
-For decryption, we have to add just two lines, which server the purpose of 
-reversing the array, which stores the sub keys for different rounds
-For decryption, just we have to reverse the array which stores the sub keys:
-key_from_pc2_bin=key_from_pc2_bin[::-1]
-key_from_pc2_hex=key_from_pc2_hex[::-1]
-'''
-
-'''
-----------OUTPUT----------
-Enter the message to be decrypted: 
-86760F7ABEE16B24
-No padding required
-Message after padding:  86760F7ABEE16B24
-Enter the 64bit key for decryption: 
-74631BBDCA8
-Padding required
-Key after padding:  74631BBDCA800000
-Encryption
-Message after initial permutation:  6A1A976431FA5C5F
-The converted 56bit key is:  00111000000100110000101100000001011000001001000111001101
-Round: Left key part: Right key part: SubKey used:
-01       31FA5C5F        29B656BD     16AB20801DC9
-02       29B656BD        5706FABD     54412204E41E
-03       5706FABD        7669590A     10C4D8788942
-04       7669590A        EA0DAA35     4930C4372660
-05       EA0DAA35        0A6342EC     231E0184B313
-06       0A6342EC        62E16561     942303B208CA
-07       62E16561        488D0D53     80C9B8746225
-08       488D0D53        458145D1     494060887282
-09       458145D1        B2467F7F     4814910716B4
-10       B2467F7F        44AE2868     23270490981F
-11       44AE2868        69DDF400     A46803610AE8
-12       69DDF400        7C74DB60     108972C57034
-13       7C74DB60        8F2C919D     40D08808191A
-14       8F2C919D        6E81D6DE     69064C734D28
-15       6E81D6DE        5C466E23     8A34034AB231
-16       4B5D2471        5C466E23     A289056D34C0
-Plain text is:  536ABCD8910FF900
->>> 
-'''
-
-'''
-Took help from: https://www.geeksforgeeks.org/data-encryption-standard-des-set-1
-Thanks for the help !
-'''
